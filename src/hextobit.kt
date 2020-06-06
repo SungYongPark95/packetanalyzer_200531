@@ -16,7 +16,7 @@ fun main() {
     val ethSourAddr = hexTest.slice(lengEthSourAddr)
 //    println(hexTest.slice(lengEthAddr))
     val ethType = hexTest.slice(lengEthType)
-    hexTest = hexTest.substring(28)
+    var hexT = hexTest.substring(28)
 
 
     print("1.Ethernet\n\t1) Destination Address : ")
@@ -32,9 +32,20 @@ fun main() {
                 "\t1) Version : 04\n" +
                 "\t2) Header Length : ")
         //IPv4 Header Length = min 20 to max 60, take string and convert to byte
-        val ipHeaderLeng = hexTest.substring(1,1)
-        
+        var hexTemp = slicePair(hexT, 1, 2)
+//        val ipHeaderLeng = hexT.substring(1,2)
+//        hexT = hexT.substring(2)
+        var headerLeng = ipv4headerLeng(hexTemp.first)
+        hexTemp = slicePair(hexTemp.second, 0,2)
+        print("\t3) Service Type : "+ hexTemp.first)
+        if(hexTemp.first == "00"){
+            println(" / No service type")
+        }else {
+            print(" / DS : ")
+            ipv4ToS(hexTemp.first)
+        }
 
+        print("\t4) Total Length : "+ hexTemp.first)
 
     }else if(ethType.equals("0806")){
         println(" / ARP\n" +
@@ -68,8 +79,8 @@ fun addrView(addr : String){
     println(builder?.append(castUni(builder.toString())))
 }
 
-fun ipv4headerLeng(leng : String) {
-    var intHeadLeng = leng.toInt() * 5
+fun ipv4headerLeng(leng : String) : Int {
+    var intHeadLeng = leng.toInt() * 4
     if (intHeadLeng == 20){
         println(leng + " / 20 byte : No-option")
     }else if(intHeadLeng > 60){
@@ -77,5 +88,36 @@ fun ipv4headerLeng(leng : String) {
     }
     else{
         println(leng + " / " + intHeadLeng + " byte : Options exist")
+    }
+    return intHeadLeng
+}
+
+fun slicePair(t : String, i : Int, j : Int) : Pair<String, String>{
+    val a = t.substring(i, j)
+    val b = t.substring(j)
+    return Pair(a,b)
+}
+
+fun ipv4ToS(t : String) {
+    var pairHexTos = slicePair(t, 0,1)
+    var temp2 = pairHexTos.second.toInt(radix = 16)
+    var temp3 = Integer.toString(temp2,2)
+    var temp4 = String.format("%4s", temp3)
+    temp4 = temp4.replace(" ", "0")
+    var pairBinaryTos = slicePair(temp4, 0,2)
+    if(pairBinaryTos.first == "00"){
+        print("Normal")
+    }else if (pairBinaryTos.first == "11"){
+        print("experimental/local")
+    }else{
+        print("experimental/booking")
+    }
+    print(" / ECN : ")
+    if(pairBinaryTos.second == "00"){
+        println("Didn't use ECN")
+    }else if (pairBinaryTos.second == "11"){
+        println("Router congestion")
+    }else{
+        println("Endpoint accepts the ECN")
     }
 }
