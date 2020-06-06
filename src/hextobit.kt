@@ -27,10 +27,13 @@ fun main() {
 
     print("\t3) Type : " + ethType)
     if (ethType.equals("0800")){
-        println(" / IP\n" +
+        print(" / IP\n" +
                 "2.IP\n" +
                 "\t1) Version : 04\n" +
                 "\t2) Header Length : ")
+        //IPv4 Header Length = min 20 to max 60, take string and convert to byte
+        val ipHeaderLeng = hexTest.substring(1,1)
+        
 
 
     }else if(ethType.equals("0806")){
@@ -41,6 +44,7 @@ fun main() {
         println(" / IPv6\n" +
                 "2.IPv6\n" +
                 "\t1) Version : 06")
+
     }else{
         println(" / Ethernet or Other kinds of Protocol")
     }
@@ -62,4 +66,16 @@ fun addrView(addr : String){
     for(i in 2..15 step 3)
         builder?.insert(i,":")
     println(builder?.append(castUni(builder.toString())))
+}
+
+fun ipv4headerLeng(leng : String) {
+    var intHeadLeng = leng.toInt() * 5
+    if (intHeadLeng == 20){
+        println(leng + " / 20 byte : No-option")
+    }else if(intHeadLeng > 60){
+        println(leng + " / More than maximum value")
+    }
+    else{
+        println(leng + " / " + intHeadLeng + " byte : Options exist")
+    }
 }
