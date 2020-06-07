@@ -35,7 +35,7 @@ fun main() {
         var hexTemp = slicePair(hexT, 1, 2)
 //        val ipHeaderLeng = hexT.substring(1,2)
 //        hexT = hexT.substring(2)
-        var headerLeng = ipv4headerLeng(hexTemp.first)
+        var ipheaderLeng = ipv4headerLeng(hexTemp.first)
         hexTemp = slicePair(hexTemp.second, 0,2)
         print("\t3) Service Type : "+ hexTemp.first)
         if(hexTemp.first == "00"){
@@ -44,8 +44,13 @@ fun main() {
             print(" / DS : ")
             ipv4ToS(hexTemp.first)
         }
+        hexTemp = slicePair(hexTemp.second, 0, 4)
+        var ipv4TotalLeng = hexTemp.first.toInt(radix = 16)
+        var ipv4Payload = ipv4TotalLeng - ipheaderLeng
+        print("\t4) Total Length : "+ hexTemp.first + " / " + ipv4TotalLeng + " bytes : " + ipv4Payload + " bytes payload")
 
-        print("\t4) Total Length : "+ hexTemp.first)
+
+
 
     }else if(ethType.equals("0806")){
         println(" / ARP\n" +
