@@ -1,4 +1,6 @@
+import java.lang.String.format
 import java.lang.StringBuilder
+import kotlin.system.exitProcess
 
 fun main() {
     //1.Get the packet from user
@@ -47,8 +49,37 @@ fun main() {
         hexTemp = slicePair(hexTemp.second, 0, 4)
         var ipv4TotalLeng = hexTemp.first.toInt(radix = 16)
         var ipv4Payload = ipv4TotalLeng - ipheaderLeng
-        print("\t4) Total Length : "+ hexTemp.first + " / " + ipv4TotalLeng + " bytes : " + ipv4Payload + " bytes payload")
+        println("\t4) Total Length : "+ hexTemp.first + " / " + ipv4TotalLeng + " bytes : " + ipv4Payload + " bytes payload")
 
+        hexTemp = slicePair(hexTemp.second, 0, 4)
+        var ipv4Iden = hexTemp.first.toInt(radix = 16)
+        print("\t5) Identification : "+ hexTemp.first+ " / " + ipv4Iden + " /")
+        ipv4IdenSlice(hexTemp.first)
+
+        hexTemp = slicePair(hexTemp.second, 0, 1)
+        print("\t6) Flags : " + hexTemp.first)
+        ipv4Flags(hexTemp.first)
+
+        hexTemp = slicePair(hexTemp.second, 0, 3)
+        ipv4Offset(hexTemp.first)
+
+        hexTemp = slicePair(hexTemp.second, 0,2)
+        ipv4TTL(hexTemp.first)
+
+        hexTemp = slicePair(hexTemp.second, 0,2)
+        var ipv4ptc = ipv4Protocol(hexTemp.first)
+
+        hexTemp = slicePair(hexTemp.second, 0,4)
+        var ipv4checksum = hexTemp.first
+        println("10) Checksum : " + ipv4checksum)
+
+        hexTemp = slicePair(hexTemp.second, 0,8)
+        print("11) Source Address : ")
+        ipv4addr(hexTemp.first)
+
+        hexTemp = slicePair(hexTemp.second, 0,8)
+        print("12) Destination Address : ")
+        ipv4addr(hexTemp.first)
 
 
 
@@ -124,5 +155,77 @@ fun ipv4ToS(t : String) {
         println("Router congestion")
     }else{
         println("Endpoint accepts the ECN")
+    }
+}
+
+fun ipv4IdenSlice (t : String) {
+    for(i in 0..t.length-1){
+        print(" " + t[i].toString().toInt(radix = 16))
+    }
+    println()
+}
+
+fun ipv4Flags (t : String){
+    var temp1 = format("%4s", t.toInt(16).toString(2)).replace(" ", "0")
+    println(" / " + temp1)
+    println("\t\t- Reserve : " + temp1[0])
+    print("\t\t- Don't Fragment : " + temp1[1] )
+    if(temp1[1] == '0'){
+        println(" / Able to fragment")
+    }else{
+        println(" / Unable to fragment")
+    }
+    print("\t\t- More : " + temp1[2])
+    if(temp1[2] == '0'){
+        println(" / No more fragments")
+    }else{
+        println(" / More fragments")
+    }
+}
+
+fun ipv4Offset (t: String){
+    print("\t7) Offset : " + t + " / ")
+    if(t == "000"){
+        println("First Fragment")
+    }else{
+        println(t + "th Fragment")
+    }
+}
+
+fun ipv4TTL (t: String){
+    println("\t8) TTL : " + t + " / " + t.toInt(16) + " hops")
+}
+
+fun ipv4Protocol (t: String) : Int {
+    var ptc = t.toInt(16)
+    print("\t9) Protocol : " + ptc + " / " )
+    if(ptc == 1)
+    {
+        println("ICMP")
+    }else if (ptc == 2 ){
+        println("IGMP")
+    }else if (ptc == 6 ){
+        println("TCP")
+    }else if (ptc == 8 ){
+        println("EGP")
+    }else if (ptc == 17 ){
+        println("UDP")
+    }else if (ptc == 89 ){
+        println("OSPF")
+    }
+    return ptc
+}
+
+fun ipv4addr (t: String){
+    print(t + " / ")
+    var temp = slicePair(t, 0, 2)
+    for(i in 1..4){
+        print(temp.first.toInt(16))
+        if (i == 4){
+            println()
+            return
+        }
+        print(".")
+        temp = slicePair(temp.second, 0, 2)
     }
 }
