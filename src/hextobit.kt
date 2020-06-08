@@ -71,14 +71,14 @@ fun main() {
 
         hexTemp = slicePair(hexTemp.second, 0,4)
         var ipv4checksum = hexTemp.first
-        println("10) Checksum : " + ipv4checksum)
+        println("\t10) Checksum : " + ipv4checksum)
 
         hexTemp = slicePair(hexTemp.second, 0,8)
-        print("11) Source Address : ")
+        print("\t11) Source Address : ")
         ipv4addr(hexTemp.first)
 
         hexTemp = slicePair(hexTemp.second, 0,8)
-        print("12) Destination Address : ")
+        print("\t12) Destination Address : ")
         ipv4addr(hexTemp.first)
 
 
