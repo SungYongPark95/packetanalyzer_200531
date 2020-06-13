@@ -541,7 +541,13 @@ fun ipv4(hexT:String, numMen :Int){
             ipv4(hexTemp.second, numbMenu)
         }
         else {
-            println("\t4) Rest Data : " + hexTemp.second + " / " + (hexTemp.second.length / 2) + " bytes")
+            hexTemp = slicePair(hexTemp.second, 0,4)
+            val icmpId = hexTemp.first
+            println("\t4) Identifier : $icmpId / " + icmpId.toInt(16))
+            hexTemp = slicePair(hexTemp.second, 0,4)
+            val icmpSeq = hexTemp.first
+            println("\t5) Sequence Number : $icmpSeq / " + icmpSeq.toInt(16))
+            println("\t6) Rest Data : " + hexTemp.second + " / " + (hexTemp.second.length / 2) + " bytes")
         }
 
     }else if (ipv4ptc == 2 ){
