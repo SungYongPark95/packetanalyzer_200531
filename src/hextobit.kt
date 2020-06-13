@@ -21,145 +21,25 @@ fun main() {
     val ethType = hexTest.slice(lengEthType)
     var hexT = hexTest.substring(28)
 
+    var numbMenu = 1
 
-    print("1.Ethernet\n\t1) Destination Address : ")
+
+    print("$numbMenu. Ethernet\n\t1) Destination Address : ")
+    numbMenu++
     addrView(ethDestAddr)
 
     print("\t2) Source Address : ")
     addrView(ethSourAddr)
 
-    print("\t3) Type : " + ethType)
-    if (ethType.equals("0800")){
-        print(" / IP\n" +
-                "2.IP\n" +
-                "\t1) Version : 04\n" +
-                "\t2) Header Length : ")
-        //IPv4 Header Length = min 20 to max 60, take string and convert to byte
-        var hexTemp = slicePair(hexT, 1, 2)
-//        val ipHeaderLeng = hexT.substring(1,2)
-//        hexT = hexT.substring(2)
-        val ipheaderLeng = ipv4headerLeng(hexTemp.first)
-        hexTemp = slicePair(hexTemp.second, 0,2)
-        print("\t3) Service Type : "+ hexTemp.first)
-        if(hexTemp.first == "00"){
-            println(" / No service type")
-        }else {
-            print(" / DS : ")
-            ipv4ToS(hexTemp.first)
-        }
-        hexTemp = slicePair(hexTemp.second, 0, 4)
-        val ipv4TotalLeng = hexTemp.first.toInt(radix = 16)
-        val ipv4Payload = ipv4TotalLeng - ipheaderLeng
-        println("\t4) Total Length : "+ hexTemp.first + " / " + ipv4TotalLeng + " bytes : " + ipv4Payload + " bytes payload")
+    print("\t3) Type : $ethType")
+    if (ethType == "0800"){
+        print(" / IP\n")
+        ipv4(hexT, numbMenu)
 
-        hexTemp = slicePair(hexTemp.second, 0, 4)
-        val ipv4Iden = hexTemp.first.toInt(radix = 16)
-        print("\t5) Identification : "+ hexTemp.first+ " / " + ipv4Iden + " /")
-        ipv4IdenSlice(hexTemp.first)
-
-        hexTemp = slicePair(hexTemp.second, 0, 1)
-        print("\t6) Flags : " + hexTemp.first)
-        ipv4Flags(hexTemp.first)
-
-        hexTemp = slicePair(hexTemp.second, 0, 3)
-        ipv4Offset(hexTemp.first)
-
-        hexTemp = slicePair(hexTemp.second, 0,2)
-        ipv4TTL(hexTemp.first)
-
-        hexTemp = slicePair(hexTemp.second, 0,2)
-        val ipv4ptc = ipv4Protocol(hexTemp.first)
-
-        hexTemp = slicePair(hexTemp.second, 0,4)
-        val ipv4checksum = hexTemp.first
-        println("\t10) Checksum : " + ipv4checksum)
-
-        hexTemp = slicePair(hexTemp.second, 0,8)
-        print("\t11) Source Address : ")
-        ipv4addr(hexTemp.first)
-
-        hexTemp = slicePair(hexTemp.second, 0,8)
-        print("\t12) Destination Address : ")
-        ipv4addr(hexTemp.first)
-
-        if(ipv4ptc == 1)
-        {
-            println("3. ICMP")
-            hexTemp = slicePair(hexTemp.second, 0,2)
-            print("\t1) Type : " + hexTemp.first + " / ")
-            val icmpType = icmpTP(hexTemp.first)
-
-            hexTemp = slicePair(hexTemp.second, 0,2)
-            icmpCode(hexTemp.first, icmpType)
-
-            hexTemp = slicePair(hexTemp.second, 0,4)
-            val icmpChecksum = hexTemp.first
-            println("\t3) Checksum : " + icmpChecksum)
-
-            println("\t3) Rest Data : " + hexTemp.second  + " / " + (hexTemp.second.length/2) + " bytes")
-
-        }else if (ipv4ptc == 2 ){
-            println("3. IGMP")
-        }else if (ipv4ptc == 6 ){
-            println("3. TCP")
-
-            hexTemp = slicePair(hexTemp.second, 0, 4)
-            print("\t1) Source Port : ")
-            val tcpSourcePort = tcpPort(hexTemp.first)
-
-            hexTemp = slicePair(hexTemp.second, 0, 4)
-            print("\t2) Destination Port : ")
-            val tcpDestPort = tcpPort(hexTemp.first)
-
-            hexTemp = slicePair(hexTemp.second, 0, 8)
-            println("\t3) Sequence number : " + hexTemp.first)
-
-            hexTemp = slicePair(hexTemp.second, 0, 8)
-            println("\t4) Ack number : " + hexTemp.first)
-
-            hexTemp = slicePair(hexTemp.second, 0, 1)
-            var tcpHeaderLeng = tcpHeaderLeng(hexTemp.first)
-
-            hexTemp = slicePair(hexTemp.second, 1, 3)
-            tcpControlBit(hexTemp.first)
-
-            hexTemp = slicePair(hexTemp.second, 0, 4)
-            val tcpWindow = hexTemp.first.toInt(16)
-            println("\t7) Window Size : " + hexTemp.first + " / " + tcpWindow + " bytes")
-
-            hexTemp = slicePair(hexTemp.second, 0, 4)
-            val tcpChecksum = hexTemp.first
-            println("\t8) Checksum : " + tcpChecksum)
-
-            hexTemp = slicePair(hexTemp.second, 0, 4)
-            val tcpUrgPoint = hexTemp.first
-            print("\t9) Urgent Point : ")
-            if(tcpUrgPoint == "0000"){
-                println("0000 / Not Urgent")
-            }else{
-                println(tcpUrgPoint + " / Check the Urgent Point")
-            }
-
-            val tcpOpt = hexTemp.second
-            if(tcpHeaderLeng == 20){
-
-            }else{
-                println("\t10) Option : " + tcpOpt + " / " + (tcpOpt.length/2) + " bytes")
-            }
-
-        }else if (ipv4ptc == 8 ){
-            println("3. EGP")
-        }else if (ipv4ptc == 17 ){
-            println("3. UDP")
-        }else if (ipv4ptc == 89 ){
-            println("3. OSPF")
-        }
-
-
-
-    }else if(ethType.equals("0806")){
-        println(" / ARP\n" +
-                "2.ARP")
+    }else if(ethType == "0806"){
+        println(" / ARP\n" + numbMenu.toString() +
+                ". ARP")
+        numbMenu++
         var hexTemp = slicePair(hexT, 0, 4)
         val arpHWType = arpHWT(hexTemp.first)
 
@@ -194,11 +74,11 @@ fun main() {
         ipv4addr(hexTemp.first)
 
     }
-    else if(ethType.equals("86dd")){
-        println(" / IPv6\n" +
-                "2.IPv6\n" +
+    else if(ethType == "86dd"){
+        println(" / IPv6\n" + numbMenu.toString() +
+                ".IPv6\n" +
                 "\t1) Version : 06")
-
+        numbMenu++
     }else{
         println(" / Ethernet or Other kinds of Protocol")
     }
@@ -206,14 +86,14 @@ fun main() {
 
 fun castUni(i :String): String {
     val a = i.substring(1,2).toInt(16)
-    if (i.equals("ff:ff:ff:ff:ff:ff"))
+    if (i == "ff:ff:ff:ff:ff:ff")
         return " / Broadcast"
-    if (i.equals("00:00:00:00:00:00"))
+    if (i == "00:00:00:00:00:00")
         return " / Unknown MAC"
-    if (a % 2 == 0)
-        return " / Unicast"
+    return if (a % 2 == 0)
+        " / Unicast"
     else
-        return " / Multicast"
+        " / Multicast"
 }
 
 fun addrView(addr : String){
@@ -227,12 +107,12 @@ fun addrView(addr : String){
 fun ipv4headerLeng(leng : String) : Int {
     var intHeadLeng = leng.toInt(16) * 4
     if (intHeadLeng == 20){
-        println(leng + " / 20 byte : No-option")
+        println("$leng / 20 byte : No-option")
     }else if(intHeadLeng > 60){
-        println(leng + " / More than maximum value")
+        println("$leng / More than maximum value")
     }
     else{
-        println(leng + " / " + intHeadLeng + " byte : Options exist")
+        println("$leng / $intHeadLeng byte : Options exist")
     }
     return intHeadLeng
 }
@@ -276,7 +156,7 @@ fun ipv4IdenSlice (t : String) {
 
 fun ipv4Flags (t : String){
     var temp1 = format("%4s", t.toInt(16).toString(2)).replace(" ", "0")
-    println(" / " + temp1)
+    println(" / $temp1")
     println("\t\t- Reserve : " + temp1[0])
     print("\t\t- Don't Fragment : " + temp1[1] )
     if(temp1[1] == '0'){
@@ -293,7 +173,7 @@ fun ipv4Flags (t : String){
 }
 
 fun ipv4Offset (t: String){
-    print("\t7) Offset : " + t + " / ")
+    print("\t7) Offset : $t / ")
     if(t == "000"){
         println("First Fragment")
     }else{
@@ -307,7 +187,7 @@ fun ipv4TTL (t: String){
 
 fun ipv4Protocol (t: String) : Int {
     var ptc = t.toInt(16)
-    print("\t9) Protocol : " + ptc + " / " )
+    print("\t9) Protocol : $ptc / ")
     if(ptc == 1)
     {
         println("ICMP")
@@ -326,7 +206,7 @@ fun ipv4Protocol (t: String) : Int {
 }
 
 fun ipv4addr (t: String){
-    print(t + " / ")
+    print("$t / ")
     var temp = slicePair(t, 0, 2)
     for(i in 1..4){
         print(temp.first.toInt(16))
@@ -341,7 +221,7 @@ fun ipv4addr (t: String){
 
 fun tcpPort (t: String) : Int{
     val tempPort = t.toInt(16)
-    print( t + " / " + tempPort)
+    print("$t / $tempPort")
     if(tempPort in 0..1023){
         print("(Well-Known Port) : ")
         if (tempPort == 67 || tempPort == 68){
@@ -370,7 +250,7 @@ fun tcpPort (t: String) : Int{
     }else if (tempPort in 1024..49151){
         println(" : Registered Port")
     }else if (tempPort in 49152..65535){
-        println(" : Dynamic and/or Private Port")
+        println(" : Dynamic and/or Private Port for client")
     }else{
         println(" : Unregistered Port, Please Check")
     }
@@ -387,7 +267,7 @@ fun tcpControlBit(t: String){
     var splitTemp = slicePair(t, 0, 1)
     var sa = format("%4s", splitTemp.first.toInt(16).toString(2)).replace(" ", "0")
     var sb = format("%4s", splitTemp.second.toInt(16).toString(2)).replace(" ", "0")
-    println("\t6) Control Bits : " + t + " / "+ sa + " " + sb)
+    println("\t6) Control Bits : $t / $sa $sb")
 
     splitTemp = slicePair(sa, 2,3)
     print("\t\t- Urgent : " + splitTemp.first + " / ")
@@ -398,7 +278,7 @@ fun tcpControlBit(t: String){
     }
 
     val ack = splitTemp.second
-    print("\t\t- AcK : " + ack + " / ")
+    print("\t\t- AcK : $ack / ")
     if (ack == "1"){
         println("Acknowledgement")
     } else{
@@ -423,7 +303,7 @@ fun tcpControlBit(t: String){
 
     splitTemp = slicePair(splitTemp.second, 0,1)
     val syn = splitTemp.first
-    print("\t\t- Syn : " + syn + " / ")
+    print("\t\t- Syn : $syn / ")
     if (ack == "0" && syn == "1"){
         println("Connection Request")
     }else if(ack == "1" && syn == "1"){
@@ -433,7 +313,7 @@ fun tcpControlBit(t: String){
     }
 
     val fin = splitTemp.second
-    print("\t\t- Fin : " + fin + " / ")
+    print("\t\t- Fin : $fin / ")
     if (fin == "0"){
         println("Not Connection Release")
     }else if(fin == "1" && ack == "1"){
@@ -445,7 +325,7 @@ fun tcpControlBit(t: String){
 
 fun arpHWT(t: String) : Int{
     val arpHWt = t.toInt(16)
-    print("\t1) H/W Type : " + t + " / ")
+    print("\t1) H/W Type : $t / ")
     if (arpHWt == 1){
         println("Ethernet(10Mb)")
     }else if (arpHWt == 2){
@@ -481,7 +361,7 @@ fun arpHWS(t: String) : Int{
 }
 
 fun arpPTT(t: String){
-    print("\t2) Protocol Type : " + t + " / ")
+    print("\t2) Protocol Type : $t / ")
     if (t == "0800"){
         println("IPv4")
     }else if (t == "0806"){
@@ -500,7 +380,7 @@ fun arpPTT(t: String){
 }
 
 fun arpOper(t: String){
-    print("\t5) Operation : " + t + " / ")
+    print("\t5) Operation : $t / ")
     val oper = t.toInt(16)
     if (oper == 1){
         println("ARP Request")
@@ -547,20 +427,204 @@ fun icmpTP(t: String) : Int{
 }
 
 fun icmpCode(t: String, icmpType : Int){
-    print("\t2) Code : " + t)
+    print("\t2) Code : $t")
     val code = t.toInt(16)
     if (icmpType == 3){
         print(" / ")
         if(code == 0){
             println("Network Unreachable")
-        } else if(code == 1){
+        }else if(code == 1){
             println("Host Unreachable")
-        } else if(code == 2){
+        }else if(code == 2){
             println("Protocol Unreachable")
-        } else if(code == 3){
+        }else if(code == 3){
             println("Port Unreachable")
+        }else if(code == 4){
+            println("Fragmentation needed and don't fragment was set")
+        }else if(code == 6){
+            println("Destination Network Unknown")
+        }else if(code == 7){
+            println("Destination Host Unknown")
+        }
+
+    }else if (icmpType == 5){
+        print(" / ")
+        if(code == 0){
+            println("Redirect Datagram for the Network")
+        }else if(code == 1) {
+            println("Redirect Datagram for the Host")
+        }
+    }else if (icmpType == 11){
+        print(" / ")
+        if(code == 0){
+            println("TTL exceeded in transit")
+        }else if(code == 1) {
+            println("Fragment Reassembly Time Exceeded")
         }
     }else{
         println()
+    }
+}
+
+fun ipv4(hexT:String, numMen :Int){
+    var numbMenu = numMen
+    print(numbMenu.toString() + ". IP\n" +
+            "\t1) Version : 04\n" +
+            "\t2) Header Length : ")
+    numbMenu++
+    //IPv4 Header Length = min 20 to max 60, take string and convert to byte
+    var hexTemp = slicePair(hexT, 1, 2)
+//        val ipHeaderLeng = hexT.substring(1,2)
+//        hexT = hexT.substring(2)
+    val ipheaderLeng = ipv4headerLeng(hexTemp.first)
+    hexTemp = slicePair(hexTemp.second, 0,2)
+    print("\t3) Service Type : "+ hexTemp.first)
+    if(hexTemp.first == "00"){
+        println(" / No service type")
+    }else {
+        print(" / DS : ")
+        ipv4ToS(hexTemp.first)
+    }
+    hexTemp = slicePair(hexTemp.second, 0, 4)
+    val ipv4TotalLeng = hexTemp.first.toInt(radix = 16)
+    val ipv4Payload = ipv4TotalLeng - ipheaderLeng
+    println("\t4) Total Length : " + hexTemp.first +  " / $ipv4TotalLeng bytes : $ipv4Payload bytes payload")
+
+    hexTemp = slicePair(hexTemp.second, 0, 4)
+    val ipv4Iden = hexTemp.first.toInt(radix = 16)
+    print("\t5) Identification : "+ hexTemp.first+ " / " + ipv4Iden + " /")
+    ipv4IdenSlice(hexTemp.first)
+
+    hexTemp = slicePair(hexTemp.second, 0, 1)
+    print("\t6) Flags : " + hexTemp.first)
+    ipv4Flags(hexTemp.first)
+
+    hexTemp = slicePair(hexTemp.second, 0, 3)
+    ipv4Offset(hexTemp.first)
+
+    hexTemp = slicePair(hexTemp.second, 0,2)
+    ipv4TTL(hexTemp.first)
+
+    hexTemp = slicePair(hexTemp.second, 0,2)
+    val ipv4ptc = ipv4Protocol(hexTemp.first)
+
+    hexTemp = slicePair(hexTemp.second, 0,4)
+    val ipv4checksum = hexTemp.first
+    println("\t10) Checksum : $ipv4checksum")
+
+    hexTemp = slicePair(hexTemp.second, 0,8)
+    print("\t11) Source Address : ")
+    ipv4addr(hexTemp.first)
+
+    hexTemp = slicePair(hexTemp.second, 0,8)
+    print("\t12) Destination Address : ")
+    ipv4addr(hexTemp.first)
+
+    if(ipv4ptc == 1)
+    {
+        println("$numbMenu. ICMP")
+        numbMenu++
+        hexTemp = slicePair(hexTemp.second, 0,2)
+        print("\t1) Type : " + hexTemp.first + " / ")
+        val icmpType = icmpTP(hexTemp.first)
+
+        hexTemp = slicePair(hexTemp.second, 0,2)
+        icmpCode(hexTemp.first, icmpType)
+
+        hexTemp = slicePair(hexTemp.second, 0,4)
+        val icmpChecksum = hexTemp.first
+        println("\t3) Checksum : $icmpChecksum")
+
+        if(icmpType == 3){
+            hexTemp = slicePair(hexTemp.second, 0,8)
+            println("\t4) Unused : " + hexTemp.first)
+            ipv4(hexTemp.second, numbMenu)
+        }
+        else {
+            println("\t4) Rest Data : " + hexTemp.second + " / " + (hexTemp.second.length / 2) + " bytes")
+        }
+
+    }else if (ipv4ptc == 2 ){
+        println("$numbMenu. IGMP")
+        numbMenu++
+    }else if (ipv4ptc == 6 ){
+        println("$numbMenu. TCP")
+        numbMenu++
+        hexTemp = slicePair(hexTemp.second, 0, 4)
+        print("\t1) Source Port : ")
+        val tcpSourcePort = tcpPort(hexTemp.first)
+
+        hexTemp = slicePair(hexTemp.second, 0, 4)
+        print("\t2) Destination Port : ")
+        val tcpDestPort = tcpPort(hexTemp.first)
+
+        hexTemp = slicePair(hexTemp.second, 0, 8)
+        println("\t3) Sequence number : " + hexTemp.first)
+
+        hexTemp = slicePair(hexTemp.second, 0, 8)
+        println("\t4) Ack number : " + hexTemp.first)
+
+        hexTemp = slicePair(hexTemp.second, 0, 1)
+        var tcpHeaderLeng = tcpHeaderLeng(hexTemp.first)
+
+        hexTemp = slicePair(hexTemp.second, 1, 3)
+        tcpControlBit(hexTemp.first)
+
+        hexTemp = slicePair(hexTemp.second, 0, 4)
+        val tcpWindow = hexTemp.first.toInt(16)
+        println("\t7) Window Size : " + hexTemp.first + " / " + tcpWindow + " bytes")
+
+        hexTemp = slicePair(hexTemp.second, 0, 4)
+        val tcpChecksum = hexTemp.first
+        println("\t8) Checksum : $tcpChecksum")
+
+        hexTemp = slicePair(hexTemp.second, 0, 4)
+        val tcpUrgPoint = hexTemp.first
+        print("\t9) Urgent Point : ")
+        if(tcpUrgPoint == "0000"){
+            println("0000 / Not Urgent")
+        }else{
+            println("$tcpUrgPoint / Check the Urgent Point")
+        }
+
+        val tcpOpt = hexTemp.second
+        if(tcpHeaderLeng == 20){
+
+        }else{
+            println("\t10) Option : " + tcpOpt + " / " + (tcpOpt.length/2) + " bytes")
+        }
+
+    }else if (ipv4ptc == 8 ){
+        println("$numbMenu. EGP")
+        numbMenu++
+    }else if (ipv4ptc == 17 ){
+        println("$numbMenu. UDP")
+        numbMenu++
+        hexTemp = slicePair(hexTemp.second, 0, 4)
+        print("\t1) Source Port : ")
+        val udpSourcePort = tcpPort(hexTemp.first)
+
+        hexTemp = slicePair(hexTemp.second, 0, 4)
+        print("\t2) Destination Port : ")
+        val udpDestPort = tcpPort(hexTemp.first)
+
+        hexTemp = slicePair(hexTemp.second, 0, 4)
+        val udpleng = hexTemp.first.toInt(16)
+        println("\t3) Total Length : " + hexTemp.first + " / " + udpleng + " bytes (at least 8 byte)")
+
+        hexTemp = slicePair(hexTemp.second, 0, 4)
+        val udpChecksum = hexTemp.first
+        println("\t4) Checksum : $udpChecksum")
+
+        val udpData = hexTemp.second
+        if(udpleng <= 8){
+
+        }else{
+            println("\t5) Rest Data : " + udpData + " / " + (udpData.length/2) + " bytes")
+        }
+
+
+    }else if (ipv4ptc == 89 ){
+        println("3. OSPF")
     }
 }
