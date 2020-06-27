@@ -1,8 +1,7 @@
 import java.lang.String.format
 import java.lang.StringBuilder
-import kotlin.system.exitProcess
 
-// 과정중에 16진수로 제대로 변환하지 않은 곳이 있는지 확인할 것
+
 fun main() {
     //1.Get the packet from user
     println("Input the packet!")
@@ -23,7 +22,7 @@ fun main() {
 
     var numbMenu = 1
 
-
+    //4. Print the result
     print("$numbMenu. Ethernet\n\t1) Destination Address : ")
     numbMenu++
     addrView(ethDestAddr)
@@ -32,11 +31,14 @@ fun main() {
     addrView(ethSourAddr)
 
     print("\t3) Type : $ethType")
+
+    //5. Type : IPv4
     if (ethType == "0800"){
         print(" / IP\n")
         ipv4(hexT, numbMenu)
-
     }else if(ethType == "0806"){
+
+    //6. Type : ARP
         println(" / ARP\n" + numbMenu.toString() +
                 ". ARP")
         numbMenu++
@@ -74,6 +76,7 @@ fun main() {
         ipv4addr(hexTemp.first)
 
     }
+    //7. Type : IPv6 (Not Included)
     else if(ethType == "86dd"){
         println(" / IPv6\n" + numbMenu.toString() +
                 ".IPv6\n" +
@@ -84,6 +87,7 @@ fun main() {
     }
 }
 
+// Determine the MAC address
 fun castUni(i :String): String {
     val a = i.substring(1,2).toInt(16)
     if (i == "ff:ff:ff:ff:ff:ff")
@@ -96,6 +100,7 @@ fun castUni(i :String): String {
         " / Multicast"
 }
 
+// Make hax code to viewable MAC address
 fun addrView(addr : String){
     var builder : StringBuilder? = StringBuilder()
     builder?.append(addr)
@@ -104,6 +109,7 @@ fun addrView(addr : String){
     println(builder?.append(castUni(builder.toString())))
 }
 
+// In ipv4, check the header length
 fun ipv4headerLeng(leng : String) : Int {
     var intHeadLeng = leng.toInt(16) * 4
     if (intHeadLeng == 20){
@@ -117,12 +123,14 @@ fun ipv4headerLeng(leng : String) : Int {
     return intHeadLeng
 }
 
+// Make 'pair' to contain each value and rest of data
 fun slicePair(t : String, i : Int, j : Int) : Pair<String, String>{
     val a = t.substring(i, j)
     val b = t.substring(j)
     return Pair(a,b)
 }
 
+//IPv4, Type of service
 fun ipv4ToS(t : String) {
     var pairHexTos = slicePair(t, 0,1)
     var temp2 = pairHexTos.second.toInt(radix = 16)
@@ -147,6 +155,7 @@ fun ipv4ToS(t : String) {
     }
 }
 
+// IPv4, Slice the Identification area
 fun ipv4IdenSlice (t : String) {
     for(i in 0..t.length-1){
         print(" " + t[i].toString().toInt(radix = 16))
@@ -154,6 +163,7 @@ fun ipv4IdenSlice (t : String) {
     println()
 }
 
+//IPv4, Interpret the flag value
 fun ipv4Flags (t : String){
     var temp1 = format("%4s", t.toInt(16).toString(2)).replace(" ", "0")
     println(" / $temp1")
@@ -172,6 +182,7 @@ fun ipv4Flags (t : String){
     }
 }
 
+//IPv4, Check the offset
 fun ipv4Offset (t: String){
     print("\t7) Offset : $t / ")
     if(t == "000"){
@@ -181,10 +192,12 @@ fun ipv4Offset (t: String){
     }
 }
 
+//IPv4, Time to live
 fun ipv4TTL (t: String){
     println("\t8) TTL : " + t + " / " + t.toInt(16) + " hops")
 }
 
+//IPv4, Match the code to Protocol
 fun ipv4Protocol (t: String) : Int {
     var ptc = t.toInt(16)
     print("\t9) Protocol : $ptc / ")
@@ -205,6 +218,7 @@ fun ipv4Protocol (t: String) : Int {
     return ptc
 }
 
+//Make the IP address
 fun ipv4addr (t: String){
     print("$t / ")
     var temp = slicePair(t, 0, 2)
@@ -219,6 +233,7 @@ fun ipv4addr (t: String){
     }
 }
 
+//Relate with TCP Port infomation
 fun tcpPort (t: String) : Int{
     val tempPort = t.toInt(16)
     print("$t / $tempPort")
@@ -257,12 +272,14 @@ fun tcpPort (t: String) : Int{
     return tempPort
 }
 
+//About TCP Header Length
 fun tcpHeaderLeng(t: String) : Int{
     var temp = t.toInt(16)
     println("\t5) Header Length : " + temp + " / " + temp * 4 + " bytes : option " + (temp * 4 - 20) + " bytes")
     return temp * 4
 }
 
+//About TCP Control Bit
 fun tcpControlBit(t: String){
     var splitTemp = slicePair(t, 0, 1)
     var sa = format("%4s", splitTemp.first.toInt(16).toString(2)).replace(" ", "0")
@@ -322,7 +339,7 @@ fun tcpControlBit(t: String){
         println("Connection Request")
     }
 }
-
+//About ARP Hardware Type
 fun arpHWT(t: String) : Int{
     val arpHWt = t.toInt(16)
     print("\t1) H/W Type : $t / ")
@@ -353,13 +370,14 @@ fun arpHWT(t: String) : Int{
     }
     return arpHWt
 }
-
+//About ARP Hardware Size
 fun arpHWS(t: String) : Int{
     val arpHWs = t.toInt(16) * 8
     println("\t3) H/W Size : " + t + " / " + arpHWs + "bits")
     return arpHWs
 }
 
+//About ARP Protocol Type
 fun arpPTT(t: String){
     print("\t2) Protocol Type : $t / ")
     if (t == "0800"){
@@ -378,7 +396,7 @@ fun arpPTT(t: String){
         println("PPPoE PPP Session Stage")
     }
 }
-
+//About ARP Operation
 fun arpOper(t: String){
     print("\t5) Operation : $t / ")
     val oper = t.toInt(16)
@@ -392,7 +410,7 @@ fun arpOper(t: String){
         println("RARP Reply")
     }
 }
-
+//About ICMP Type
 fun icmpTP(t: String) : Int{
     val type = t.toInt(16)
     if (type == 0){
@@ -425,7 +443,7 @@ fun icmpTP(t: String) : Int{
     }
     return type
 }
-
+//About ICMP code area
 fun icmpCode(t: String, icmpType : Int){
     print("\t2) Code : $t")
     val code = t.toInt(16)
@@ -465,7 +483,7 @@ fun icmpCode(t: String, icmpType : Int){
         println()
     }
 }
-
+//About IPv4 Area. Make separate model for ICMP type code.
 fun ipv4(hexT:String, numMen :Int){
     var numbMenu = numMen
     print(numbMenu.toString() + ". IP\n" +
@@ -539,6 +557,12 @@ fun ipv4(hexT:String, numMen :Int){
             hexTemp = slicePair(hexTemp.second, 0,8)
             println("\t4) Unused : " + hexTemp.first)
             ipv4(hexTemp.second, numbMenu)
+        }else if(icmpType == 4 || icmpType == 5 || icmpType == 11 || icmpType == 12){
+            hexTemp = slicePair(hexTemp.second, 0,8)
+            val icmpRestHeader = hexTemp.first
+            val icmpData = hexTemp.second
+            println("\t4) Rest of the header : $icmpRestHeader")
+            println("\t5) Rest Data : $icmpData / " + (hexTemp.second.length / 2) + " bytes")
         }
         else {
             hexTemp = slicePair(hexTemp.second, 0,4)
