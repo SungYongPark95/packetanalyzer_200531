@@ -17,24 +17,52 @@
 //location은 0 이상 (현재 대기목록에 있는 작업 수 - 1) 이하의 값을 가지며 대기목록의 가장 앞에 있으면 0, 두 번째에 있으면 1로 표현합니다.
 //
 //생각하는 방법 1. data class를 만들어 처음 지정된 위치, 중요도를 입력한다. 반복문을 돌리고 indexOf를 통해
-//2. intArray로 받아서 저장 
+//2. intArray로 받아서 저장
+//3. 해당하는 값을 기준으로 돌린다.
 
 
 
 fun main() {
-    var prior : IntArray = intArrayOf(2, 1, 3, 2)
-    var locat : Int = 2
+    var prior : IntArray = intArrayOf(1, 1, 9, 1, 1, 1)
+    var locat : Int = 0
 
     Solution().solution(prior, locat)
 }
+
+data class Page (val prior : Int, val firstLocation : Int)
 class Solution {
     fun solution(priorities: IntArray, location: Int): Int {
+        var location = location
         var answer = 0
+        var flag = 0
         var mutList = mutableListOf<Int>()
         for (i in priorities){
             mutList.add(i)
         }
-        mutList.asSequence()
+        for (i in 0..mutList.size){
+            if(flag == 1){
+                break
+            }
+            print("test\n")
+            for (j in 0..location){
+                if(mutList[0] < mutList.max()!!){
+                    mutList.add(mutList[0])
+                }else if(j == location) {
+                    answer++
+                    flag = 1
+                    break
+                }else {
+                    answer++
+                }
+                mutList.removeAt(0)
+                print("test2\n")
+            }
+            location = mutList.size
+        }
+        //처음에 한턴을 반복하고 끝이나면 마지막 인덱스를 반환하여야 한다
+        //만약 되지 않았다면 다시 반복을 해야한다. 반복은 최대 100번 이어질수 있다.
+
+
         return answer
     }
 }
