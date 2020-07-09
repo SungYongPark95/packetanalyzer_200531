@@ -15,6 +15,9 @@
 //현재 대기목록에는 1개 이상 100개 이하의 문서가 있습니다.
 //인쇄 작업의 중요도는 1~9로 표현하며 숫자가 클수록 중요하다는 뜻입니다.
 //location은 0 이상 (현재 대기목록에 있는 작업 수 - 1) 이하의 값을 가지며 대기목록의 가장 앞에 있으면 0, 두 번째에 있으면 1로 표현합니다.
+//
+//생각하는 방법 1. data class를 만들어 처음 지정된 위치, 중요도를 입력한다. 반복문을 돌리고 indexOf를 통해
+//2. intArray로 받아서 저장 
 
 
 
@@ -28,9 +31,10 @@ class Solution {
     fun solution(priorities: IntArray, location: Int): Int {
         var answer = 0
         var mutList = mutableListOf<Int>()
-
-
-
+        for (i in priorities){
+            mutList.add(i)
+        }
+        mutList.asSequence()
         return answer
     }
 }
